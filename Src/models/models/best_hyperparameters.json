@@ -1,0 +1,11 @@
+{
+  "best_model": "RandomForestClassifier",
+  "best_f1_score": 0.5659259259259259,
+  "best_parameters": {
+    "max_depth": 15,
+    "min_samples_leaf": 1,
+    "min_samples_split": 5,
+    "n_estimators": 50
+  },
+  "timestamp": "2025-08-13T18:39:55.627227"
+}

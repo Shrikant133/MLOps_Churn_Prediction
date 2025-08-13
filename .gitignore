@@ -1,0 +1,123 @@
+# Virtual Environments
+venv/
+env/
+mlops-env/
+.env
+.venv
+
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.Python
+build/
+develop-eggs/
+dist/
+downloads/
+eggs/
+.eggs/
+lib/
+lib64/
+parts/
+sdist/
+var/
+wheels/
+share/python-wheels/
+*.egg-info/
+.installed.cfg
+*.egg
+MANIFEST
+
+# MLflow
+mlruns/
+mlflow.db
+artifacts/
+.mlflow/
+
+# Data Files (add specific datasets if large)
+data/raw/
+data/processed/
+*.csv
+*.parquet
+*.pkl
+*.joblib
+*.h5
+*.hdf5
+
+# Models (if too large)
+models/*.pkl
+models/*.joblib
+models/*.h5
+*.model
+
+# Jupyter Notebooks (optional - include checkpoints)
+.ipynb_checkpoints/
+*/.ipynb_checkpoints/*
+
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+
+# OS
+.DS_Store
+.DS_Store?
+._*
+.Spotlight-V100
+.Trashes
+ehthumbs.db
+Thumbs.db
+
+# Logs
+*.log
+logs/
+log/
+
+# Docker
+.dockerignore
+
+# API Keys and Secrets
+.env
+.env.local
+.env.*.local
+secrets.json
+config.json
+
+# Testing
+.coverage
+.pytest_cache/
+.tox/
+.nox/
+htmlcov/
+
+# Temporary files
+*.tmp
+*.temp
+temp/
+tmp/
+
+# Database
+*.db
+*.sqlite
+*.sqlite3
+
+# MLOps specific
+wandb/
+.wandb/
+lightning_logs/
+tensorboard_logs/
+experiments/
+
+# Cloud credentials
+gcp-key.json
+aws-credentials.json
+azure-credentials.json
+
+# Large files that should be in cloud storage
+# Uncomment if you have large files
+# *.zip
+# *.tar.gz
+# *.rar

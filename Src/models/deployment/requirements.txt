@@ -1,0 +1,13 @@
+# API Deployment Requirements
+fastapi==0.103.1
+uvicorn[standard]==0.23.2
+pydantic==2.3.0
+pandas==2.0.3
+numpy==1.24.3
+scikit-learn==1.3.0
+joblib==1.3.2
+python-multipart==0.0.6
+
+# Model serving
+mlflow==2.7.1
+prometheus-client==0.17.1

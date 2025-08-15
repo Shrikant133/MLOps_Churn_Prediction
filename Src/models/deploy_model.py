@@ -33,8 +33,9 @@ def validate_champion_model():
     
     if model_path is None:
         print(" No trained model found. Available options:")
-        print("1. Run: python src/models/hyperpar.py")
-        print("2. Or run: python src/models/train_models.py")
+        print("1. Run: python hyperpara.py")
+        print("2. Or run: python src/models/train_models.py") 
+        print("3. Or run: python src/models/hyperparameter_tuning_enhanced.py")
         raise FileNotFoundError("No trained model found. Please run model training first.")
     
     print(f" Found model: {model_path}")
@@ -102,8 +103,12 @@ def validate_champion_model():
 def create_model_registry():
     """Register model in MLflow Model Registry"""
     print(" Registering model in MLflow Model Registry...")
-    
+
     mlflow.set_tracking_uri("sqlite:///mlflow.db")
+
+    # Create or set experiment
+    experiment_name = "Production_Model_Registry"
+    mlflow.set_experiment(experiment_name)
     
     model, metadata = validate_champion_model()
     
@@ -263,25 +268,30 @@ def generate_deployment_report():
 
 def check_dependencies():
     """Check if all required dependencies are available"""
-    print(" Checking deployment dependencies...")
+    print("🔍 Checking deployment dependencies...")
     
-    dependencies = {
-        'models/champion_model.pkl': 'Champion model file',
-        'models/champion_model_metadata.json': 'Model metadata',
-    }
+    # Check for any trained model files
+    model_files_found = []
+    possible_models = [
+        'models/champion_model.pkl',
+        'models/best_random_forest.pkl', 
+        'models/best_logistic_regression.pkl',
+        'models/best_svm.pkl'
+    ]
     
-    missing_deps = []
-    for dep_path, description in dependencies.items():
-        if not os.path.exists(dep_path):
-            missing_deps.append(f"{dep_path} ({description})")
+    for model_path in possible_models:
+        if os.path.exists(model_path):
+            model_files_found.append(model_path)
     
-    if missing_deps:
-        print("  Missing dependencies:")
-        for dep in missing_deps:
-            print(f"   - {dep}")
+    if not model_files_found:
+        print(" No trained model files found!")
+        print(" Available training options:")
+        print("   1. python hyperpara.py (your hyperparameter tuning file)")
+        print("   2. python src/models/train_models.py (basic training)")
+        print("   3. python src/models/hyperparameter_tuning_enhanced.py (enhanced tuning)")
         return False
     
-    print(" All dependencies available")
+    print(f" Found trained models: {model_files_found}")
     return True
 
 def create_api_requirements():
@@ -362,8 +372,9 @@ def main():
         if not check_dependencies():
             print("\n Deployment preparation failed due to missing dependencies")
             print("\n To fix this, run one of the following:")
-            print("1. python src/models/hyperparameter_tuning_enhanced.py")
-            print("2. python src/models/train_models.py")
+            print("1. python hyperpara.py (your hyperparameter tuning file)")
+            print("2. python src/models/train_models.py (basic model training)")
+            print("3. python src/models/hyperparameter_tuning_enhanced.py (enhanced tuning)")
             return False
         
         # Step 2: Validate model
@@ -385,7 +396,7 @@ def main():
         report = generate_deployment_report()
         
         print("\n" + "="*60)
-        print("✨ MODEL DEPLOYMENT PREPARATION COMPLETED!")
+        print(" MODEL DEPLOYMENT PREPARATION COMPLETED!")
         print("="*60)
         
         print(" Files created:")
@@ -403,11 +414,11 @@ def main():
         print(f" Ready for CI/CD pipeline and Docker deployment!")
         
         print("\n Next Steps:")
-        print("1.  Model deployment preparation completed")
-        print("2.  Create FastAPI service (src/api/main.py)")
-        print("3.  Build Docker container: docker build -f deployment/Dockerfile -t churn-api .")
-        print("4.  Deploy to cloud platform (AWS/GCP/Azure)")
-        print("5.  Set up monitoring and logging")
+        print("1. Model deployment preparation completed")
+        print("2. Create FastAPI service (src/api/main.py)")
+        print("3. Build Docker container: docker build -f deployment/Dockerfile -t churn-api .")
+        print("4. Deploy to cloud platform (AWS/GCP/Azure)")
+        print("5. Set up monitoring and logging")
         
         return True
         

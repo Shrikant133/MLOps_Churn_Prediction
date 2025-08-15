@@ -1,3 +1,4 @@
+# src/models/train_models.py
 import pandas as pd
 import numpy as np
 import mlflow
@@ -19,15 +20,15 @@ def load_processed_data():
     """Load the processed data"""
     try:
         df = pd.read_csv('D:\MLOps_Churn_Prediction\Data\data_processed.csv')
-        print(f"Processed data loaded: {df.shape}")
+        print(f" Processed data loaded: {df.shape}")
         return df
     except FileNotFoundError:
-        print("Processed data not found. Please run data preprocessing first.")
+        print(" Processed data not found. Please run data preprocessing first.")
         return None
 
 def prepare_data_for_training(df, test_size=0.2, random_state=42):
     """Split and scale the data"""
-    print("Preparing data for training...")
+    print(" Preparing data for training...")
     
     # Separate features and target
     X = df.drop('Churn', axis=1)
@@ -67,12 +68,18 @@ def calculate_metrics(y_true, y_pred, y_pred_proba=None):
     return metrics
 
 def train_logistic_regression(X_train, X_test, y_train, y_test, feature_names):
-    """Train Logistic Regression model"""
-    print("Training Logistic Regression...")
+    """Train Logistic Regression with L2 regularization"""
+    print(" Training Optimized Logistic Regression...")
     
-    with mlflow.start_run(run_name="logistic_regression"):
-        # Train model
-        model = LogisticRegression(random_state=42, max_iter=1000)
+    with mlflow.start_run(run_name="logistic_regression_optimized"):
+        # Train model with regularization for better performance
+        model = LogisticRegression(
+            random_state=42, 
+            max_iter=2000,
+            C=0.1,  # L2 regularization
+            class_weight='balanced',  # Handle class imbalance
+            solver='liblinear'
+        )
         model.fit(X_train, y_train)
         
         # Make predictions
@@ -84,7 +91,10 @@ def train_logistic_regression(X_train, X_test, y_train, y_test, feature_names):
         
         # Log parameters
         mlflow.log_param("model_type", "LogisticRegression")
-        mlflow.log_param("max_iter", 1000)
+        mlflow.log_param("max_iter", 2000)
+        mlflow.log_param("C", 0.1)
+        mlflow.log_param("class_weight", "balanced")
+        mlflow.log_param("solver", "liblinear")
         mlflow.log_param("random_state", 42)
         mlflow.log_param("n_features", len(feature_names))
         
@@ -106,16 +116,20 @@ def train_logistic_regression(X_train, X_test, y_train, y_test, feature_names):
         return model, metrics
 
 def train_random_forest(X_train, X_test, y_train, y_test, feature_names):
-    """Train Random Forest model"""
-    print("Training Random Forest...")
+    """Train Random Forest model with optimized parameters"""
+    print(" Training Optimized Random Forest...")
     
-    with mlflow.start_run(run_name="random_forest"):
-        # Train model
+    with mlflow.start_run(run_name="random_forest_optimized"):
+        # Train model with better parameters for 90%+ accuracy
         model = RandomForestClassifier(
-            n_estimators=100,
-            max_depth=10,
+            n_estimators=200,
+            max_depth=15,
+            min_samples_split=5,
+            min_samples_leaf=2,
+            max_features='sqrt',
             random_state=42,
-            n_jobs=-1
+            n_jobs=-1,
+            class_weight='balanced'  # Handle class imbalance
         )
         model.fit(X_train, y_train)
         
@@ -128,8 +142,12 @@ def train_random_forest(X_train, X_test, y_train, y_test, feature_names):
         
         # Log parameters
         mlflow.log_param("model_type", "RandomForestClassifier")
-        mlflow.log_param("n_estimators", 100)
-        mlflow.log_param("max_depth", 10)
+        mlflow.log_param("n_estimators", 200)
+        mlflow.log_param("max_depth", 15)
+        mlflow.log_param("min_samples_split", 5)
+        mlflow.log_param("min_samples_leaf", 2)
+        mlflow.log_param("max_features", "sqrt")
+        mlflow.log_param("class_weight", "balanced")
         mlflow.log_param("random_state", 42)
         mlflow.log_param("n_features", len(feature_names))
         
@@ -164,7 +182,7 @@ def train_random_forest(X_train, X_test, y_train, y_test, feature_names):
 
 def train_svm(X_train, X_test, y_train, y_test, feature_names):
     """Train Support Vector Machine model"""
-    print("Training SVM...")
+    print(" Training SVM...")
     
     with mlflow.start_run(run_name="support_vector_machine"):
         # Train model
@@ -222,21 +240,21 @@ def compare_models(model_results):
     best_f1 = comparison_df.loc[best_model, 'f1_score']
     
     print(f"\n Best Model: {best_model}")
-    print(f"Best F1-Score: {best_f1:.4f}")
+    print(f" Best F1-Score: {best_f1:.4f}")
     
     return comparison_df
 
 def main():
     """Main training pipeline"""
-    print("Starting MLflow Model Training Pipeline")
+    print(" Starting MLflow Model Training Pipeline")
     print("="*60)
     
     # Set experiment
     experiment_name = f"churn_prediction_{datetime.now().strftime('%Y%m%d')}"
     mlflow.set_experiment(experiment_name)
     
-    print(f"MLflow Experiment: {experiment_name}")
-    print(f"MLflow UI: http://localhost:5000")
+    print(f" MLflow Experiment: {experiment_name}")
+    print(f" MLflow UI: http://localhost:5000")
     
     # Load data
     df = load_processed_data()
